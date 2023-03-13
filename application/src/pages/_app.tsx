@@ -1,21 +1,12 @@
 import '@/styles/globals.css';
 import { RdtProvider } from '@/rdt/RdtProvider';
-import { styles } from '@/styles/App.styles';
-import { Box } from '@mui/material';
 import { RadixDappToolkit } from '@radixdlt/radix-dapp-toolkit';
 import type { AppProps } from 'next/app'
 import { useEffect, useState } from 'react';
+import Header from '@/components/Header/Header';
+import { Box } from '@mui/material';
+import { styles } from '@/styles/App.styles';
 
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      "radix-connect-button": React.DetailedHTMLProps<
-        React.HTMLAttributes<HTMLElement>,
-        HTMLElement
-      >;
-    }
-  }
-}
 
 export default function App({ Component, pageProps }: AppProps) {
 
@@ -44,10 +35,10 @@ export default function App({ Component, pageProps }: AppProps) {
           }
         )}
       >
-        <Box sx={styles.buttonWrapper}>
-          <radix-connect-button></radix-connect-button>
+        <Header />
+        <Box sx={styles.mainWrapper}>
+          <Component {...pageProps} />
         </Box>
-        <Component {...pageProps} />
       </RdtProvider>
     )
   } else {
