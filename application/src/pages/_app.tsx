@@ -4,6 +4,17 @@ import { RadixDappToolkit } from '@radixdlt/radix-dapp-toolkit';
 import type { AppProps } from 'next/app'
 import { useEffect, useState } from 'react';
 
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      "radix-connect-button": React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      >;
+    }
+  }
+}
+
 export default function App({ Component, pageProps }: AppProps) {
 
   const [isMounted, setMounted] = useState(false);
@@ -31,6 +42,13 @@ export default function App({ Component, pageProps }: AppProps) {
           }
         )}
       >
+        <div style={{
+        width:"100%",
+        display:"flex",
+        justifyContent:"center"
+      }}>
+        <radix-connect-button></radix-connect-button>
+      </div>
         <Component {...pageProps} />
       </RdtProvider>
     )
