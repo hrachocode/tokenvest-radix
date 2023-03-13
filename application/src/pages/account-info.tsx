@@ -3,6 +3,7 @@ import { useConnected } from '@/hooks/useConnected';
 import { usePersona } from '@/hooks/usePersona';
 import { useRequestData } from '@/hooks/useRequestData';
 import { useSendTransaction } from '@/hooks/useSendTransaction';
+import { Button, Typography } from '@mui/material';
 import Head from 'next/head'
 import { Fragment } from 'react';
 
@@ -54,18 +55,18 @@ Expression("ENTIRE_WORKTOP");
                 <link rel="icon" href="/favicon.ico" />
             </Head>
             <>
-                <p> Persona: {persona?.label}</p>
-                <p>Accounts Count: {accounts?.length}</p>
+                <Typography> Persona: {persona?.label}</Typography>
+                <Typography>Accounts Count: {accounts?.length}</Typography>
                 {accounts?.map((item, index) => {
                     return (
                         <Fragment key={index + 1}>
-                            <p>{index + 1}. {item.label}</p>
+                            <Typography>{index + 1}. {item.label}</Typography>
                         </Fragment>
                     )
                 })}
-                <p> Connected status: {connected.toString()}</p>
-                <button onClick={handleRequest}>Send Request</button>
-                <button onClick={handleTransaction}>Send Transaction</button>
+                <Typography> Connected status: {connected.toString().toUpperCase()}</Typography>
+                <Button onClick={handleRequest}>Send Request</Button>
+                <Button onClick={handleTransaction}>Send Transaction</Button>
             </>
         </>
     )

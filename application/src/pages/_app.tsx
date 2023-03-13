@@ -1,5 +1,7 @@
+import '@/styles/globals.css';
 import { RdtProvider } from '@/rdt/RdtProvider';
-import '@/styles/globals.css'
+import { styles } from '@/styles/App.styles';
+import { Box } from '@mui/material';
 import { RadixDappToolkit } from '@radixdlt/radix-dapp-toolkit';
 import type { AppProps } from 'next/app'
 import { useEffect, useState } from 'react';
@@ -42,13 +44,9 @@ export default function App({ Component, pageProps }: AppProps) {
           }
         )}
       >
-        <div style={{
-        width:"100%",
-        display:"flex",
-        justifyContent:"center"
-      }}>
-        <radix-connect-button></radix-connect-button>
-      </div>
+        <Box sx={styles.buttonWrapper}>
+          <radix-connect-button></radix-connect-button>
+        </Box>
         <Component {...pageProps} />
       </RdtProvider>
     )
