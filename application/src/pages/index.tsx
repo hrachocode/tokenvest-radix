@@ -1,4 +1,4 @@
-import Head from 'next/head'
+import Head from 'next/head';
 
 
 
@@ -12,7 +12,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <>
-      <p>Home</p>
+        <p>Home</p>
       </>
     </>
   )
