@@ -1,10 +1,10 @@
 export const styles = {
-    productsWrapper:{
+    productsWrapper: {
         display: "flex",
         flexDirection: "column",
         gap: "16px"
     },
-    productWrapper:{
+    product: {
         width: "100%",
         height: "200px",
         borderRadius: "16px",
@@ -12,19 +12,23 @@ export const styles = {
         padding: "16px",
         display: "flex",
         flexDirection: "column",
-        justifyContent: "space-between"
+        justifyContent: "space-between",
+        cursor:"pointer",
+        ":hover": {
+            background: "rgba(0,74,128,0.15)",
+        }
     },
-    titleDescriptionBox:{
+    titleDescriptionBox: {
         display: "flex",
         flexDirection: "column",
         gap: "8px"
     },
-    title:{
+    title: {
         fontWeight: "bold",
         fontSize: "24px",
         color: "rgb(13, 56, 116)"
     },
-    description:{
+    description: {
         fontSize: "16px",
         color: "rgb(13, 56, 116)",
         display: '-webkit-box',
@@ -33,19 +37,19 @@ export const styles = {
         WebkitLineClamp: 3,
         width: "70%"
     },
-    linearProgressWrapper:{
+    linearProgressWrapper: {
         height: "16px",
         width: "100%",
         display: "flex",
         alignItems: "center",
         gap: "16px"
     },
-    linearProgress:{
+    linearProgress: {
         width: "300px",
         height: "100%",
         borderRadius: "8px"
     },
-    raisedStatus:{
+    raisedStatus: {
         fontWeight: "semibold",
         color: "rgb(93,149,219)"
     }

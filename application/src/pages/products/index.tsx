@@ -11,7 +11,7 @@ export default function Products() {
                 {products.map((item, index) => {
                     return (
                         <Fragment key={index + 1}>
-                            <Box sx={styles.productWrapper}>
+                            <Box sx={styles.product}>
                                 <Box sx={styles.titleDescriptionBox}>
                                     <Typography sx={styles.title}>{item.title}</Typography>
                                     <Typography sx={styles.description}>{item.description}</Typography>
