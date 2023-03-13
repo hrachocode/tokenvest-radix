@@ -27,7 +27,7 @@ export default function App({ Component, pageProps }: AppProps) {
             });
           },
           {
-            networkId: 34,
+            networkId: 0X0b,
           }
         )}
       >
