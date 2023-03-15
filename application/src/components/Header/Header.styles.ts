@@ -8,8 +8,11 @@ export const styles = {
         paddingX:"24px",
         boxShadow:"0 30px 40px rgba(0,0,0,.1)"
     },
+    linksWrapper:{
+        display:"flex",
+        gap:"24px"
+    },
     link:{
-        textDecoration:"none",
         color:"black",
         fontWeight:"bold",
         fontSize:"24px"
