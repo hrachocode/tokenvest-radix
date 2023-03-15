@@ -26,24 +26,22 @@ export default function Home() {
 
     const handleTransaction = () =>
         sendTransaction(`
-CREATE_FUNGIBLE_RESOURCE
-18u8
-Map<String, String>(
-"name", "MyResource",                                        # Resource Name
-"symbol", "RSRC",                                            # Resource Symbol
-"description", "A very innovative and important resource"    # Resource Description
-) 
-Map<Enum, Tuple>(
-Enum("ResourceMethodAuthKey::Withdraw"), Tuple(Enum("AccessRule::AllowAll"), Enum("AccessRule::DenyAll")),
-Enum("ResourceMethodAuthKey::Deposit"), Tuple(Enum("AccessRule::AllowAll"), Enum("AccessRule::DenyAll"))
-)
-Some(Decimal("500000"));
-
+CALL_METHOD ComponentAddress("account_tdx_b_1pzfkm2ycejjvr3ae8gxwjfx2t65hmj9j4hnkvw3h9xpq9qu4tu")
+    "withdraw_by_amount"
+    Decimal("5") ResourceAddress("resource_tdx_b_1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq8z96qp");
+TAKE_FROM_WORKTOP_BY_AMOUNT
+    Decimal("5") ResourceAddress("resource_tdx_b_1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq8z96qp")
+    Bucket("bucket1");
 CALL_METHOD
-ComponentAddress("${accounts[0].address}") 
-"deposit_batch"
-Expression("ENTIRE_WORKTOP");
-`)
+ComponentAddress("component_tdx_b_1q2yyjgc76esnkuwhz5rnzlp47cyrxt9jysgzqt8s96fqem5gza")
+    "invest"
+    Bucket("bucket1")
+    "walter";
+CALL_METHOD  ComponentAddress("account_tdx_b_1pzfkm2ycejjvr3ae8gxwjfx2t65hmj9j4hnkvw3h9xpq9qu4tu")
+    "deposit_batch"
+    Expression("ENTIRE_WORKTOP");
+`);
+
 
 
     return (
