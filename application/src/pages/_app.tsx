@@ -23,7 +23,7 @@ export default function App({ Component, pageProps }: AppProps) {
           {
             dAppName: "Radix dApp",
             dAppDefinitionAddress:
-              "account_tdx_b_1pzv5m8xqy39jmjkk60jluwhrctcs4qpafrxs7rr54jwq0899y3",
+              "account_tdx_b_1pzfkm2ycejjvr3ae8gxwjfx2t65hmj9j4hnkvw3h9xpq9qu4tu",
           },
           (requestData) => {
             requestData({
