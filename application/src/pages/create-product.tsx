@@ -16,8 +16,8 @@ export default function CreateProduct() {
         func(e.target.value);
     };
 
-    const handleClick = async() =>{
-        await createProduct(title,raiseAmount);
+    const handleClick = async () => {
+        await createProduct(title, description, raiseAmount);
     };
 
     return (

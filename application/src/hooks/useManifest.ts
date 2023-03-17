@@ -1,4 +1,5 @@
-import { GATEWAY_URL, PACKAGE_ID } from "@/constants/radix";
+import { CMS_API, CMS_PRODUCTS } from "@/constants/cms";
+import { GATEWAY_URL, PACKAGE_ID, TRANSACTION_SUCCESSFULL } from "@/constants/radix";
 import { useAccounts } from "./useAccounts";
 import { useSendTransaction } from "./useSendTransaction";
 
@@ -12,7 +13,7 @@ export const useManifest = () => {
     const accounts = useAccounts();
     const sendTransaction = useSendTransaction();
 
-    const createProduct = async (title: string, raiseAmount: string) => {
+    const createProduct = async (title: string, description:string, raiseAmount: string) => {
         const transactionId = await sendTransaction(`
 CALL_FUNCTION
     PackageAddress("${PACKAGE_ID}")
@@ -38,6 +39,18 @@ CALL_METHOD
             })
         });
         const result = await data.json();
+        if (result.transaction.transaction_status === TRANSACTION_SUCCESSFULL) {
+            await fetch(`${CMS_API}/${CMS_PRODUCTS}`, {
+                body: JSON.stringify({
+                    "data": {
+                        "title": title,
+                        "description": description,
+                        "raiseAmount": raiseAmount,
+                        "raisedAmount": "0"
+                    }
+                })
+            })
+        }
         return result;
     };
     return { createProduct };
