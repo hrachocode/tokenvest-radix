@@ -1,0 +1,10 @@
+CALL_FUNCTION
+    PackageAddress("PACKAGE_ID")
+    "Investment"
+    "new"
+    Decimal("RAISE_AMOUNT")
+    "PRODUCT_TITLE";
+CALL_METHOD
+    ComponentAddress("ACCOUNT_ADDRESS")
+    "deposit_batch"
+    Expression("ENTIRE_WORKTOP");
