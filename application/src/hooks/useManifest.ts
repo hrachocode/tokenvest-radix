@@ -40,7 +40,11 @@ CALL_METHOD
         });
         const result = await data.json();
         if (result.transaction.transaction_status === TRANSACTION_SUCCESSFULL) {
-            await fetch(`${CMS_API}/${CMS_PRODUCTS}`, {
+            await fetch(`${CMS_API}${CMS_PRODUCTS}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
                 body: JSON.stringify({
                     "data": {
                         "title": title,
