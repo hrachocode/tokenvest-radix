@@ -5,6 +5,7 @@ export interface ICMSProduct {
         description: string;
         raiseAmount: string;
         raisedAmount: string;
+        componentId:string;
     }
 }
 export interface IProduct {
@@ -13,4 +14,5 @@ export interface IProduct {
     description: string;
     raiseAmount: string;
     raisedAmount: string;
+    componentId: string;
 }

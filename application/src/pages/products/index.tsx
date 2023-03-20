@@ -16,7 +16,8 @@ export async function getStaticProps() {
             title: item.attributes.title,
             description: item.attributes.description,
             raiseAmount: item.attributes.raiseAmount,
-            raisedAmount: item.attributes.raisedAmount
+            raisedAmount: item.attributes.raisedAmount,
+            componentId: item.attributes.componentId
         }
     });
 
