@@ -3,7 +3,7 @@ import { useManifest } from "@/hooks/useManifest";
 import { ICMSProduct, IProduct } from "@/interfaces/cmsInterface";
 import { Button, Input, Typography } from "@mui/material";
 import { GetStaticPropsContext } from "next";
-import { useState } from "react";
+import { ChangeEvent, useState } from "react";
 
 export async function getStaticPaths() {
 
@@ -50,20 +50,24 @@ export default function Product({ product }: { product: IProduct }) {
 
     const { invest } = useManifest();
 
-    const handleClick = ()=>{
-        invest(investAmount,product);
+    const handleChange = (e:ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) =>{
+        setInvestAmount(e.target.value);
+    }
+
+    const handleClick = () => {
+        invest(investAmount, product);
     }
 
 
 
     return (
         <>
-            <Typography>Product id: {product.id}</Typography>
             <Typography>Product title: {product.title}</Typography>
-            <Typography>Product component id: {product.componentId}</Typography>
-            <Input type='number' onChange={(e) => {
-                setInvestAmount(e.target.value)
-            }} />
+            <Typography>Product description: {product.description}</Typography>
+            <Typography>Product id: {product.id}</Typography>
+            <Typography>Raise goal: {product.raiseAmount}</Typography>
+            <Typography>Amount raised: {product.raisedAmount}</Typography>
+            <Input type='number' onChange={handleChange} />
             <Button onClick={handleClick}>invest</Button>
         </>
     )
