@@ -1,5 +1,5 @@
 import { CMS_API, CMS_PRODUCTS } from "@/constants/cms";
-import { GATEWAY_URL, PACKAGE_ID, TRANSACTION_SUCCESSFUL } from "@/constants/radix";
+import { GATEWAY_URL, GATEWAY_URL_RESOURCES, GATEWAY_URL_DETAILS, PACKAGE_ID, TRANSACTION_SUCCESSFUL } from "@/constants/radix";
 import { IProduct } from "@/interfaces/cmsInterface";
 import { useAccounts } from "./useAccounts";
 import { useSendTransaction } from "./useSendTransaction";
@@ -61,7 +61,7 @@ CALL_METHOD
     };
 
     const invest = async (investAmount: string, product: IProduct) => {
-        const res = await fetch("https://nebunet-gateway.radixdlt.com/entity/resources", {
+        const res = await fetch(GATEWAY_URL_RESOURCES, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -73,7 +73,7 @@ CALL_METHOD
         const data = await res.json();
         const resources = data.fungible_resources.items;
         await resources.forEach(async (item: { address: string }) => {
-            const details = await fetch("https://nebunet-gateway.radixdlt.com/entity/details", {
+            const details = await fetch(GATEWAY_URL_DETAILS, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -119,7 +119,7 @@ CALL_METHOD
                         })
                     });
                     const result = await data.json();
-                    const vault = result.details.receipt.state_updates.updated_substates.pop();
+                    const amount = result.details.receipt.output[3].data_json;
                     if (result.transaction.transaction_status === TRANSACTION_SUCCESSFUL) {
                         await fetch(`${CMS_API}${CMS_PRODUCTS}/${product.id}`, {
                             method: "PUT",
@@ -128,7 +128,7 @@ CALL_METHOD
                             },
                             body: JSON.stringify({
                                 "data": {
-                                    "raisedAmount": vault.substate_data.resource_amount.amount,
+                                    "raisedAmount": amount,
                                 }
                             })
                         })
