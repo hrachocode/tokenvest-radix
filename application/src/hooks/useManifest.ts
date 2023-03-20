@@ -1,5 +1,5 @@
 import { CMS_API, CMS_PRODUCTS } from "@/constants/cms";
-import { GATEWAY_URL, PACKAGE_ID, TRANSACTION_SUCCESSFULL } from "@/constants/radix";
+import { GATEWAY_URL, PACKAGE_ID, TRANSACTION_SUCCESSFUL } from "@/constants/radix";
 import { IProduct } from "@/interfaces/cmsInterface";
 import { useAccounts } from "./useAccounts";
 import { useSendTransaction } from "./useSendTransaction";
@@ -40,7 +40,7 @@ CALL_METHOD
             })
         });
         const result = await data.json();
-        if (result.transaction.transaction_status === TRANSACTION_SUCCESSFULL) {
+        if (result.transaction.transaction_status === TRANSACTION_SUCCESSFUL) {
             await fetch(`${CMS_API}${CMS_PRODUCTS}`, {
                 method: "POST",
                 headers: {
@@ -120,7 +120,7 @@ CALL_METHOD
                     });
                     const result = await data.json();
                     const vault = result.details.receipt.state_updates.updated_substates.pop();
-                    if (result.transaction.transaction_status === TRANSACTION_SUCCESSFULL) {
+                    if (result.transaction.transaction_status === TRANSACTION_SUCCESSFUL) {
                         await fetch(`${CMS_API}${CMS_PRODUCTS}/${product.id}`, {
                             method: "PUT",
                             headers: {
