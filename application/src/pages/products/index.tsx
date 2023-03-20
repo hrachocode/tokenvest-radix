@@ -47,7 +47,7 @@ export default function Products({ products }: { products: IProduct[] }) {
                                             <LinearProgress
                                                 sx={styles.linearProgress}
                                                 variant="determinate"
-                                                value={+item.raisedAmount * 100 / +item.raiseAmount} />
+                                                value={+item.raisedAmount >= +item.raiseAmount ? 100 : +item.raisedAmount * 100 / +item.raiseAmount} />
                                             <Typography sx={styles.raisedStatus}>{item.raisedAmount} / {item.raiseAmount}</Typography>
                                         </Box>
                                     </Box>
