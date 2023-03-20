@@ -1,25 +1,24 @@
+import { useManifest } from '@/hooks/useManifest';
 import { styles } from '@/styles/CreateProduct.styles';
 import { Box, Button, Input, Typography } from '@mui/material';
 import { ChangeEvent, useState } from 'react';
 
 
 export default function CreateProduct() {
+
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [raiseAmount, setRaiseAmount] = useState("");
+
+    const { createProduct } = useManifest();
 
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, func: Function) => {
         func(e.target.value);
     };
 
-    const alertProduct = () => {
-        alert(`
-        title: ${title}
-        description: ${description}
-        Raise Amount:${raiseAmount}
-        `)
+    const handleClick = async () => {
+        await createProduct(title, description, raiseAmount);
     };
-
 
     return (
         <>
@@ -42,7 +41,7 @@ export default function CreateProduct() {
                 <Button
                     sx={styles.button}
                     variant='contained'
-                    onClick={alertProduct}
+                    onClick={handleClick}
                 >CREATE A PRODUCT</Button>
             </Box>
         </>
