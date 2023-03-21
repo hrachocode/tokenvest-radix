@@ -44,6 +44,7 @@ export const useManifest = () => {
             raisedAmount: the amount that has already been raised for the produect(default 0)
             componentId: component address we receive from transaction information
             ownerAddress: the account address of the user who created the product
+            ownerResource: the owner badge resource address
             */
             await handleRequest(`${CMS_API}${CMS_PRODUCTS}`, METHODS.POST, {
                 "data": {
@@ -52,7 +53,8 @@ export const useManifest = () => {
                     "raiseAmount": raiseAmount,
                     "raisedAmount": DEFAULT_RAISED_AMOUNT,
                     "componentId": transactionInfo.details.referenced_global_entities[0],
-                    "ownerAddress": accounts[0].address
+                    "ownerAddress": accounts[0].address,
+                    "ownerResource": transactionInfo.details.referenced_global_entities[1],
                 }
             })
         }
@@ -126,7 +128,13 @@ export const useManifest = () => {
     };
 
     const withdraw = async (product: IProduct) => {
-        const transcationRes = await sendTransaction(withdrawManifest(product.componentId, accounts[0].address));
+        const transactionRes = await sendTransaction(withdrawManifest(accounts[0].address, product.ownerResource, product.componentId));
+        const transactionInfo = await handleRequest(GATEWAY_URL, METHODS.POST, {
+            "transaction_identifier": {
+                "type": "intent_hash",
+                "value_hex": (transactionRes as ITransactionRes).value.transactionIntentHash
+            }
+        });
     };
 
     return { createProduct, invest, withdraw };

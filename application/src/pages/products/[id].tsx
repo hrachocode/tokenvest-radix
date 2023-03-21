@@ -35,7 +35,8 @@ export async function getStaticProps(context: GetStaticPropsContext) {
         raiseAmount: data.data.attributes.raiseAmount,
         raisedAmount: data.data.attributes.raisedAmount,
         componentId: data.data.attributes.componentId,
-        ownerAddress: data.data.attributes.ownerAddress
+        ownerAddress: data.data.attributes.ownerAddress,
+        ownerResource: data.data.attributes.ownerResource
     }
 
     return {

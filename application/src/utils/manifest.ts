@@ -52,8 +52,12 @@ CALL_METHOD
 `
 }
 
-export const withdrawManifest = (componentId:string,accountAddress:string) =>{
+export const withdrawManifest = (accountAddress:string,resourceAddress:string, componentId:string) =>{
     return `
+CALL_METHOD 
+    ComponentAddress("${accountAddress}")
+    "create_proof"
+    ResourceAddress("${resourceAddress}");
 CALL_METHOD
     ComponentAddress("${componentId}")
     "withdraw";
