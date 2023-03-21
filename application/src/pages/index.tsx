@@ -1,49 +1,17 @@
 import { useAccounts } from '@/hooks/useAccounts';
 import { useConnected } from '@/hooks/useConnected';
 import { usePersona } from '@/hooks/usePersona';
-import { useRequestData } from '@/hooks/useRequestData';
-import { useSendTransaction } from '@/hooks/useSendTransaction';
-import { Button, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 import Head from 'next/head'
 import { Fragment } from 'react';
 
 
 
 export default function Home() {
+    
     const accounts = useAccounts();
     const persona = usePersona();
-    const requestData = useRequestData();
-    const sendTransaction = useSendTransaction();
     const connected = useConnected();
-
-    const handleRequest = () =>
-        requestData({
-            accounts: { quantifier: "exactly", quantity: 2, oneTime: true },
-        }).map(({ accounts }) => {
-            alert(`Got wallet response!
-        ${JSON.stringify(accounts, null, 2)}`);
-        })
-
-    const handleTransaction = () =>
-        sendTransaction(`
-CREATE_FUNGIBLE_RESOURCE
-18u8
-Map<String, String>(
-"name", "MyResource",                                        # Resource Name
-"symbol", "RSRC",                                            # Resource Symbol
-"description", "A very innovative and important resource"    # Resource Description
-) 
-Map<Enum, Tuple>(
-Enum("ResourceMethodAuthKey::Withdraw"), Tuple(Enum("AccessRule::AllowAll"), Enum("AccessRule::DenyAll")),
-Enum("ResourceMethodAuthKey::Deposit"), Tuple(Enum("AccessRule::AllowAll"), Enum("AccessRule::DenyAll"))
-)
-Some(Decimal("500000"));
-
-CALL_METHOD
-ComponentAddress("${accounts[0].address}") 
-"deposit_batch"
-Expression("ENTIRE_WORKTOP");
-`)
 
 
     return (
@@ -65,8 +33,6 @@ Expression("ENTIRE_WORKTOP");
                     )
                 })}
                 <Typography> Connected status: {connected.toString().toUpperCase()}</Typography>
-                <Button onClick={handleRequest}>Send Request</Button>
-                <Button onClick={handleTransaction}>Send Transaction</Button>
             </>
         </>
     )
