@@ -1,6 +1,7 @@
 import { CMS_API, CMS_PRODUCTS } from "@/constants/cms";
 import { GATEWAY_URL, GATEWAY_URL_RESOURCES, GATEWAY_URL_DETAILS, PACKAGE_ID, TRANSACTION_SUCCESSFUL } from "@/constants/radix";
 import { IProduct } from "@/interfaces/cmsInterface";
+import { createProductManifest, investManifest } from "@/utils/manifest";
 import { useAccounts } from "./useAccounts";
 import { useSendTransaction } from "./useSendTransaction";
 
@@ -15,18 +16,7 @@ export const useManifest = () => {
     const sendTransaction = useSendTransaction();
 
     const createProduct = async (title: string, description: string, raiseAmount: string) => {
-        const transactionId = await sendTransaction(`
-CALL_FUNCTION
-    PackageAddress("${PACKAGE_ID}")
-    "Investment"
-    "new"
-    Decimal("${raiseAmount}")
-    "${title}";
-CALL_METHOD
-    ComponentAddress("${accounts[0].address}")
-    "deposit_batch"
-    Expression("ENTIRE_WORKTOP");    
-`);
+        const transactionId = await sendTransaction(createProductManifest(PACKAGE_ID, raiseAmount, title, accounts[0].address));
         const data = await fetch(GATEWAY_URL, {
             method: "POST",
             headers: {
@@ -87,26 +77,7 @@ CALL_METHOD
             detailsRes.metadata.items.forEach(async (item: { value: string }) => {
                 if (item.value === "Radix") {
                     const radixAddress = detailsRes.address;
-                    const transactionId = await sendTransaction(`
-CALL_METHOD
-    ComponentAddress("${accounts[0].address}")
-    "withdraw_by_amount"
-    Decimal("${investAmount}")
-    ResourceAddress("${radixAddress}");
-TAKE_FROM_WORKTOP_BY_AMOUNT
-    Decimal("${investAmount}")
-    ResourceAddress("${radixAddress}")
-    Bucket("bucket1");
-CALL_METHOD
-    ComponentAddress("${product.componentId}")
-    "invest"
-    Bucket("bucket1")
-    "walter";
-CALL_METHOD
-    ComponentAddress("${accounts[0].address}")
-    "deposit_batch"
-    Expression("ENTIRE_WORKTOP");                  
-`);
+                    const transactionId = await sendTransaction(investManifest(accounts[0].address, investAmount, radixAddress, product.componentId));
                     const data = await fetch(GATEWAY_URL, {
                         method: "POST",
                         headers: {
