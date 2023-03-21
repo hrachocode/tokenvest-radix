@@ -13,6 +13,8 @@ mod investment {
         xrd_tokens_vault: Vault,
         // Investment goal for the startup
         investment_goal: Decimal,
+        // Empty vault for errors
+        error_bucket: Vault,
     }
 
     impl Investment {
@@ -34,6 +36,7 @@ mod investment {
                 investors: HashMap::default(),
                 xrd_tokens_vault: Vault::new(RADIX_TOKEN),
                 investment_goal: investment_goal,
+                error_bucket: Vault::new(RADIX_TOKEN),
             }
             .instantiate();
         investment_component.add_access_check(access_rules);
@@ -51,9 +54,13 @@ mod investment {
 
         // "withdraw" method allows the startup owner to withdraw the investments
         pub fn withdraw(&mut self) -> Bucket {
-
+           if self.xrd_tokens_vault.amount() >= self.investment_goal {
             self.xrd_tokens_vault.take_all()
-
+        }
+    else {
+        error!("NOT ENOUGH INVESTED");
+        self.error_bucket.take_all()
     }
+  }
 }
 }
