@@ -5,17 +5,18 @@ use std::collections::HashMap;
 #[blueprint]
 mod investment {
     struct Investment {
-        // The name of the startup
+        // Name of the startup
         startup: String,
         // HashMap with investors and the amount invested
         investors: HashMap<String,Decimal>,
-        // The vault where the xrd payments will be stored.
+        // Vault where the xrd payments will be stored.
         xrd_tokens_vault: Vault,
-        // The investment goal for the startup
+        // Investment goal for the startup
         investment_goal: Decimal,
     }
 
     impl Investment {
+        // "new" function initializes the smart contract
         pub fn new(investment_goal: Decimal, startup: String) -> (ComponentAddress, Bucket) {
 
             let owner_badge: Bucket = ResourceBuilder::new_fungible()
@@ -33,7 +34,6 @@ mod investment {
                 investors: HashMap::default(),
                 xrd_tokens_vault: Vault::new(RADIX_TOKEN),
                 investment_goal: investment_goal,
-               // xrd_collected: Decimal::default()
             }
             .instantiate();
         investment_component.add_access_check(access_rules);
@@ -41,23 +41,19 @@ mod investment {
         return (investment_component_address,owner_badge);
         }
         
-        pub fn invest(&mut self, funds: Bucket, investor: String) -> Bucket{
+        // "invest" method allows the users to invest in the product
+        pub fn invest(&mut self, funds: Bucket, investor: String) -> Decimal {
             let new_investment_amount = funds.amount();
             self.xrd_tokens_vault.put(funds);
             self.investors.insert(investor,new_investment_amount);
-
-                                    
-            let investor_badge: Bucket  = ResourceBuilder::new_fungible()
-            .metadata("name", "Investor Badge")
-            .metadata("symbol", "Investor")
-            .mint_initial_supply(1);
-
-
-            return investor_badge
+            self.xrd_tokens_vault.amount()
         }
 
+        // "withdraw" method allows the startup owner to withdraw the investments
         pub fn withdraw(&mut self) -> Bucket {
+
             self.xrd_tokens_vault.take_all()
+
     }
-    }
+}
 }
