@@ -1,3 +1,11 @@
+/*
+createProductManifest is a function which takes four arguments: 
+pakcageId(the package address of the deployed package)
+raiseAmount(the amount to raise for the product)
+title(product title)
+accountAddress(the address of the account that creates the product)
+createProductManifest returns a manifest string using all of the arguments mentioned
+*/
 export const createProductManifest = (packageId: string, raiseAmount: string, title: string, accountAddress: string) => {
     return `
 CALL_FUNCTION
@@ -13,6 +21,14 @@ CALL_METHOD
 `
 }
 
+/*
+investManifest is a function which takes four arguments: 
+accountAddress(the address of the account that creates the product)
+investAmount(the amount to invest)
+radixAddress(radix resource address)
+componentId(the adress of the component)
+investManifest returns a manifest string using all of the arguments mentioned
+*/
 export const investManifest = (accountAddress:string,investAmount:string,radixAddress:string,componentId:string) => {
     return `
 CALL_METHOD
