@@ -52,7 +52,8 @@ CALL_METHOD
                         "description": description,
                         "raiseAmount": raiseAmount,
                         "raisedAmount": "0",
-                        "componentId": result.details.referenced_global_entities[0]
+                        "componentId": result.details.referenced_global_entities[0],
+                        "ownerAddress": accounts[0].address
                     }
                 })
             })
