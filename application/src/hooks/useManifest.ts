@@ -3,7 +3,7 @@ import { GATEWAY_URL, GATEWAY_URL_RESOURCES, GATEWAY_URL_DETAILS, PACKAGE_ID, TR
 import { IProduct } from "@/interfaces/cmsInterface";
 import { ITransactionRes } from "@/interfaces/radixInterface";
 import { handleRequest, METHODS } from "@/utils/handleRequest";
-import { createProductManifest, investManifest } from "@/utils/manifest";
+import { createProductManifest, investManifest, withdrawManifest } from "@/utils/manifest";
 import { useAccounts } from "./useAccounts";
 import { useSendTransaction } from "./useSendTransaction";
 
@@ -125,6 +125,9 @@ export const useManifest = () => {
         })
     };
 
+    const withdraw = async (product: IProduct) => {
+        const transcationRes = await sendTransaction(withdrawManifest(product.componentId, accounts[0].address));
+    };
 
-    return { createProduct, invest };
+    return { createProduct, invest, withdraw };
 };

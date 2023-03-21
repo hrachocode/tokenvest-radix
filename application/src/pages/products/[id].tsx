@@ -57,7 +57,7 @@ export default function Product({ product }: { product: IProduct }) {
     const [investAmount, setInvestAmount] = useState("0");
     const accounts = useAccounts();
 
-    const { invest } = useManifest();
+    const { invest, withdraw } = useManifest();
 
     const handleChange = (e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
         setInvestAmount(e.target.value);
@@ -65,6 +65,10 @@ export default function Product({ product }: { product: IProduct }) {
 
     const handleClick = () => {
         invest(investAmount, product);
+    }
+
+    const handleWithdraw = () =>{
+        withdraw(product);
     }
 
 
@@ -78,8 +82,8 @@ export default function Product({ product }: { product: IProduct }) {
             <Typography>Amount raised: {product.raisedAmount}</Typography>
             <Input type='number' onChange={handleChange} />
             <Button onClick={handleClick}>invest</Button>
-            {mounted && (product.ownerAddress === accounts[0].address) &&
-                <Button>withdraw</Button>}
+            {mounted && (product.ownerAddress === accounts?.[0]?.address) &&
+                <Button onClick={handleWithdraw}>withdraw</Button>}
         </>
     )
 };

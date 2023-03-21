@@ -51,3 +51,15 @@ CALL_METHOD
     Expression("ENTIRE_WORKTOP");                  
 `
 }
+
+export const withdrawManifest = (componentId:string,accountAddress:string) =>{
+    return `
+CALL_METHOD
+    ComponentAddress("${componentId}")
+    "withdraw";
+CALL_METHOD
+    ComponentAddress("${accountAddress}")
+    "deposit_batch"
+    Expression("ENTIRE_WORKTOP");
+`
+}
