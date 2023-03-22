@@ -13,10 +13,15 @@ export const styles = {
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
-        cursor:"pointer",
+        cursor: "pointer",
+        position: "relative",
         ":hover": {
             background: "rgba(0,74,128,0.15)",
         }
+    },
+    completeProduct: {
+        background: "rgba(0,74,128,0.15)",
+        opacity: "0.7"
     },
     titleDescriptionBox: {
         display: "flex",
@@ -52,5 +57,34 @@ export const styles = {
     raisedStatus: {
         fontWeight: "semibold",
         color: "rgb(93,149,219)"
+    },
+    completeWrapper: {
+        position: "absolute",
+        top: "0",
+        left: "0",
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    completeBox: {
+        width: "200px",
+        height: "120px",
+        background: "white",
+        borderRadius: "36px",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        boxShadow: "0px 0px 20px #888888",
+        ">p": {
+            fontWeight: "bold",
+            color: "rgb(13, 56, 116)"
+        }
+    },
+    finishedText: {
+        fontWeight: "bold",
+        fontSize: "36px",
+        color: "rgb(13, 56, 116)"
     }
 }

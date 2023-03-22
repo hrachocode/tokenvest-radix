@@ -45,8 +45,9 @@ export const useManifest = () => {
             componentId: component address we receive from transaction information
             ownerAddress: the account address of the user who created the product
             ownerResource: the owner badge resource address
+            complete: the state of the product(default false)
             */
-            await handleRequest(`${CMS_API}${CMS_PRODUCTS}`, METHODS.POST, {
+            const postRes = await handleRequest(`${CMS_API}${CMS_PRODUCTS}`, METHODS.POST, {
                 "data": {
                     "title": title,
                     "description": description,
@@ -55,8 +56,14 @@ export const useManifest = () => {
                     "componentId": transactionInfo.details.referenced_global_entities[0],
                     "ownerAddress": accounts[0].address,
                     "ownerResource": transactionInfo.details.referenced_global_entities[1],
+                    "complete": false
                 }
-            })
+            });
+            if (postRes.data) {
+                alert("Product successfully created!!!")
+            } else {
+                alert("Something went wrong!!!")
+            }
         }
     };
 
@@ -116,11 +123,16 @@ export const useManifest = () => {
                         to update data in our CMS.
                         Using the total amount from above we update the raisedAmount value 
                         */
-                        await handleRequest(`${CMS_API}${CMS_PRODUCTS}/${product.id}`, METHODS.PUT, {
+                        const putRes = await handleRequest(`${CMS_API}${CMS_PRODUCTS}/${product.id}`, METHODS.PUT, {
                             "data": {
                                 "raisedAmount": amount,
                             }
                         })
+                        if (putRes.data) {
+                            alert(`Successfully invested ${investAmount}!!!`)
+                        } else {
+                            alert("Something went wrong!!!")
+                        }
                     }
                 }
             })
@@ -135,6 +147,22 @@ export const useManifest = () => {
                 "value_hex": (transactionRes as ITransactionRes).value.transactionIntentHash
             }
         });
+        const updatedStates = transactionInfo.details.receipt.state_updates.updated_substates;
+        if(updatedStates.length === 1){
+            alert("Not enough to withdraw !!!")
+        } else {
+            const putRes = await handleRequest(`${CMS_API}${CMS_PRODUCTS}/${product.id}`, METHODS.PUT, {
+                "data": {
+                    "complete": true,
+                }
+            })
+            if (putRes.data) {
+                alert(`Success!!!`)
+            } else {
+                alert("Something went wrong!!!")
+            }
+        }
+        
     };
 
     return { createProduct, invest, withdraw };

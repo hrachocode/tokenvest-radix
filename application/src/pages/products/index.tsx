@@ -18,7 +18,8 @@ export async function getStaticProps() {
             raiseAmount: item.attributes.raiseAmount,
             raisedAmount: item.attributes.raisedAmount,
             componentId: item.attributes.componentId,
-            ownerAddress: item.attributes.ownerAddress
+            ownerAddress: item.attributes.ownerAddress,
+            complete: item.attributes.complete
         }
     });
 
@@ -39,7 +40,7 @@ export default function Products({ products }: { products: IProduct[] }) {
                         return (
                             <Fragment key={index + 1}>
                                 <Link href={`${PRODUCTS}/${item.id}`}>
-                                    <Box sx={styles.product}>
+                                    <Box sx={!item.complete ? styles.product : { ...styles.product, ...styles.completeProduct }}>
                                         <Box sx={styles.titleDescriptionBox}>
                                             <Typography sx={styles.title}>{item.title}</Typography>
                                             <Typography sx={styles.description}>{item.description}</Typography>
@@ -51,6 +52,12 @@ export default function Products({ products }: { products: IProduct[] }) {
                                                 value={+item.raisedAmount >= +item.raiseAmount ? 100 : +item.raisedAmount * 100 / +item.raiseAmount} />
                                             <Typography sx={styles.raisedStatus}>{item.raisedAmount} / {item.raiseAmount}</Typography>
                                         </Box>
+                                        {item.complete ?
+                                            <Box sx={styles.completeWrapper}>
+                                                <Box sx={styles.completeBox}>
+                                                    <Typography>FINISHED</Typography>
+                                                </Box>
+                                            </Box> : <></>}
                                     </Box>
                                 </Link>
                             </Fragment>
