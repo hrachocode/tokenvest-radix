@@ -4,6 +4,7 @@ import { IProduct } from "@/interfaces/cmsInterface";
 import { ITransactionRes } from "@/interfaces/radixInterface";
 import { handleRequest, METHODS } from "@/utils/handleRequest";
 import { createProductManifest, investManifest, withdrawManifest } from "@/utils/manifest";
+import { useState } from "react";
 import { useAccounts } from "./useAccounts";
 import { useSendTransaction } from "./useSendTransaction";
 
@@ -14,10 +15,12 @@ and returns two functions: createProduct and invest
 export const useManifest = () => {
     const accounts = useAccounts();
     const sendTransaction = useSendTransaction();
+    const [isLoading,setLoading] = useState(false);
     /*
     createProduct is a function which takes three attributes: title(product title), description(product description) and raiseAmount(the amount that should be raised for the product)
     */
     const createProduct = async (title: string, description: string, raiseAmount: string) => {
+        setLoading(true);
         /* 
         1. Call sendTransaction method with createProductManifest
         sendTranscation is a method that takes manifest string as an argument and calls it using the sendTransaction() method provided by radix-dapp-toolkit
@@ -45,8 +48,9 @@ export const useManifest = () => {
             componentId: component address we receive from transaction information
             ownerAddress: the account address of the user who created the product
             ownerResource: the owner badge resource address
+            complete: the state of the product(default false)
             */
-            await handleRequest(`${CMS_API}${CMS_PRODUCTS}`, METHODS.POST, {
+            const postRes = await handleRequest(`${CMS_API}${CMS_PRODUCTS}`, METHODS.POST, {
                 "data": {
                     "title": title,
                     "description": description,
@@ -55,8 +59,18 @@ export const useManifest = () => {
                     "componentId": transactionInfo.details.referenced_global_entities[0],
                     "ownerAddress": accounts[0].address,
                     "ownerResource": transactionInfo.details.referenced_global_entities[1],
+                    "complete": false
                 }
-            })
+            });
+            if (postRes.data) {
+                setLoading(false);
+                alert("Product successfully created!!!");
+            } else {
+                setLoading(false);
+                alert("Something went wrong!!!");
+            }
+        } else {
+            setLoading(false);
         }
     };
 
@@ -64,6 +78,7 @@ export const useManifest = () => {
     invest is a function which takes two arguments: investAmount(the amount to invest), product(product information)
     */
     const invest = async (investAmount: string, product: IProduct) => {
+        setLoading(true);
         /*
         1. Call handleRequest with nebunet resources url
         By sendind the account address, we receive information about account resources
@@ -116,11 +131,20 @@ export const useManifest = () => {
                         to update data in our CMS.
                         Using the total amount from above we update the raisedAmount value 
                         */
-                        await handleRequest(`${CMS_API}${CMS_PRODUCTS}/${product.id}`, METHODS.PUT, {
+                        const putRes = await handleRequest(`${CMS_API}${CMS_PRODUCTS}/${product.id}`, METHODS.PUT, {
                             "data": {
                                 "raisedAmount": amount,
                             }
                         })
+                        if (putRes.data) {
+                            setLoading(false);
+                            alert(`Successfully invested ${investAmount}!!!`);
+                        } else {
+                            setLoading(false);
+                            alert("Something went wrong!!!");
+                        }
+                    } else {
+                        setLoading(false);
                     }
                 }
             })
@@ -128,6 +152,7 @@ export const useManifest = () => {
     };
 
     const withdraw = async (product: IProduct) => {
+        setLoading(true);
         const transactionRes = await sendTransaction(withdrawManifest(accounts[0].address, product.ownerResource, product.componentId));
         const transactionInfo = await handleRequest(GATEWAY_URL, METHODS.POST, {
             "transaction_identifier": {
@@ -135,7 +160,26 @@ export const useManifest = () => {
                 "value_hex": (transactionRes as ITransactionRes).value.transactionIntentHash
             }
         });
+        const updatedStates = transactionInfo.details.receipt.state_updates.updated_substates;
+        if(updatedStates.length === 1){
+            setLoading(false);
+            alert("Not enough to withdraw !!!");
+        } else {
+            const putRes = await handleRequest(`${CMS_API}${CMS_PRODUCTS}/${product.id}`, METHODS.PUT, {
+                "data": {
+                    "complete": true,
+                }
+            })
+            if (putRes.data) {
+                setLoading(false);
+                alert(`Success!!!`);
+            } else {
+                setLoading(false); 
+                alert("Something went wrong!!!");
+            }
+        }
+        
     };
 
-    return { createProduct, invest, withdraw };
+    return { createProduct, invest, withdraw, isLoading };
 };

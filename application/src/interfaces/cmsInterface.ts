@@ -8,6 +8,7 @@ export interface ICMSProduct {
         componentId:string;
         ownerAddress:string;
         ownerResource:string;
+        complete:boolean;
     }
 }
 export interface IProduct {
@@ -19,4 +20,5 @@ export interface IProduct {
     componentId: string;
     ownerAddress: string;
     ownerResource:string;
+    complete:boolean;
 }

@@ -32,6 +32,9 @@
     },
     "ownerResource": {
       "type": "string"
+    },
+    "complete": {
+      "type": "boolean"
     }
   }
 }

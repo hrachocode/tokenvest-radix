@@ -2,7 +2,8 @@ import { CMS_API, CMS_PRODUCTS } from "@/constants/cms";
 import { useAccounts } from "@/hooks/useAccounts";
 import { useManifest } from "@/hooks/useManifest";
 import { ICMSProduct, IProduct } from "@/interfaces/cmsInterface";
-import { Button, Input, Typography } from "@mui/material";
+import { styles } from "@/styles/Products.styles";
+import { Button, CircularProgress, Input, Typography } from "@mui/material";
 import { GetStaticPropsContext } from "next";
 import { ChangeEvent, useEffect, useState } from "react";
 
@@ -36,7 +37,8 @@ export async function getStaticProps(context: GetStaticPropsContext) {
         raisedAmount: data.data.attributes.raisedAmount,
         componentId: data.data.attributes.componentId,
         ownerAddress: data.data.attributes.ownerAddress,
-        ownerResource: data.data.attributes.ownerResource
+        ownerResource: data.data.attributes.ownerResource,
+        complete: data.data.attributes.complete
     }
 
     return {
@@ -58,7 +60,7 @@ export default function Product({ product }: { product: IProduct }) {
     const [investAmount, setInvestAmount] = useState("0");
     const accounts = useAccounts();
 
-    const { invest, withdraw } = useManifest();
+    const { invest, withdraw, isLoading } = useManifest();
 
     const handleChange = (e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
         setInvestAmount(e.target.value);
@@ -68,7 +70,7 @@ export default function Product({ product }: { product: IProduct }) {
         invest(investAmount, product);
     }
 
-    const handleWithdraw = () =>{
+    const handleWithdraw = () => {
         withdraw(product);
     }
 
@@ -81,10 +83,18 @@ export default function Product({ product }: { product: IProduct }) {
             <Typography>Product id: {product.id}</Typography>
             <Typography>Raise goal: {product.raiseAmount}</Typography>
             <Typography>Amount raised: {product.raisedAmount}</Typography>
-            <Input type='number' onChange={handleChange} />
-            <Button onClick={handleClick}>invest</Button>
-            {mounted && (product.ownerAddress === accounts?.[0]?.address) &&
-                <Button onClick={handleWithdraw}>withdraw</Button>}
+            {!product.complete ?
+                <>
+                    <Input type='number' onChange={handleChange} />
+                    <Button disabled={isLoading} onClick={handleClick}>invest</Button>
+                    {mounted && (product.ownerAddress === accounts?.[0]?.address) &&
+                        <Button disabled={isLoading} onClick={handleWithdraw}>withdraw</Button>}
+                    {isLoading && <CircularProgress size={16} />}
+                </> :
+                <>
+                    <Typography sx={styles.finishedText}>Finished</Typography>
+                </>
+            }
         </>
     )
 };
