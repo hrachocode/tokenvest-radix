@@ -1,4 +1,4 @@
-import { CMS_API, CMS_PRODUCTS, DEFAULT_RAISED_AMOUNT } from "@/constants/cms";
+import { CMS_API, CMS_PRODUCTS, CMS_PRODUCTS_REF, CMS_UPLOAD, DEFAULT_RAISED_AMOUNT, IMAGE_FIELD } from "@/constants/cms";
 import { GATEWAY_URL, GATEWAY_URL_RESOURCES, GATEWAY_URL_DETAILS, PACKAGE_ID, TRANSACTION_SUCCESSFUL } from "@/constants/radix";
 import { IProduct } from "@/interfaces/cmsInterface";
 import { ITransactionRes } from "@/interfaces/radixInterface";
@@ -17,9 +17,9 @@ export const useManifest = () => {
     const sendTransaction = useSendTransaction();
     const [isLoading, setLoading] = useState(false);
     /*
-    createProduct is a function which takes three attributes: title(product title), description(product description) and raiseAmount(the amount that should be raised for the product)
+    createProduct is a function which takes four arguments: title(product title), description(product description) and raiseAmount(the amount that should be raised for the product), image(blob)
     */
-    const createProduct = async (title: string, description: string, raiseAmount: string) => {
+    const createProduct = async (title: string, description: string, raiseAmount: string, imageFile: Blob) => {
         setLoading(true);
         /* 
         1. Call sendTransaction method with createProductManifest
@@ -62,9 +62,29 @@ export const useManifest = () => {
                     "complete": false
                 }
             });
+            const id = postRes.data.id;
             if (postRes.data) {
-                setLoading(false);
-                alert("Product successfully created!!!");
+                if (imageFile) {
+                    const formData = new FormData();
+                    formData.append("ref", CMS_PRODUCTS_REF);
+                    formData.append("refId", id);
+                    formData.append("field", IMAGE_FIELD);
+                    formData.append("files", imageFile);
+                    const postRes = await fetch(`${CMS_API}${CMS_UPLOAD}`, {
+                        method: METHODS.POST,
+                        body: formData
+                    });
+                    if (postRes.ok) {
+                        setLoading(false);
+                        alert("Product successfully created!!!");
+                    } else {
+                        setLoading(false);
+                        alert("There was a problem with image")
+                    }
+                } else {
+                    setLoading(false);
+                    alert("Product successfully created!!!");
+                }
             } else {
                 setLoading(false);
                 alert("Something went wrong!!!");
