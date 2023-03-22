@@ -1,4 +1,4 @@
-import { CMS_API, CMS_PRODUCTS } from "@/constants/cms";
+import { CMS_API, CMS_PRODUCTS, POPULATE_ALL } from "@/constants/cms";
 import { useAccounts } from "@/hooks/useAccounts";
 import { useManifest } from "@/hooks/useManifest";
 import { ICMSProduct, IProduct } from "@/interfaces/cmsInterface";
@@ -26,7 +26,7 @@ export async function getStaticPaths() {
 
 export async function getStaticProps(context: GetStaticPropsContext) {
 
-    const res = await fetch(`${CMS_API}${CMS_PRODUCTS}/${context.params?.id}?populate=*`);
+    const res = await fetch(`${CMS_API}${CMS_PRODUCTS}/${context.params?.id}${POPULATE_ALL}`);
     const data = await res.json();
 
     const product: IProduct = {
@@ -38,7 +38,8 @@ export async function getStaticProps(context: GetStaticPropsContext) {
         componentId: data.data.attributes.componentId,
         ownerAddress: data.data.attributes.ownerAddress,
         ownerResource: data.data.attributes.ownerResource,
-        complete: data.data.attributes.complete
+        complete: data.data.attributes.complete,
+        image: data.data.attributes.image?.data?.attributes?.url || null
     }
 
     return {

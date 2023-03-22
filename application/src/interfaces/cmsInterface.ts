@@ -9,6 +9,13 @@ export interface ICMSProduct {
         ownerAddress:string;
         ownerResource:string;
         complete:boolean;
+        image:{
+            data:{
+                attributes:{
+                    url:string
+                }
+            }
+        };
     }
 }
 export interface IProduct {
@@ -21,4 +28,5 @@ export interface IProduct {
     ownerAddress: string;
     ownerResource:string;
     complete:boolean;
+    image:string | null;
 }

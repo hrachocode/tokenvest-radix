@@ -3,12 +3,14 @@ import { styles } from '@/styles/Products.styles';
 import { Box, LinearProgress, Typography } from '@mui/material';
 import Link from 'next/link';
 import { Fragment } from 'react';
-import { CMS_API, CMS_PRODUCTS } from '@/constants/cms';
+import { CMS_API, CMS_PRODUCTS, POPULATE_ALL } from '@/constants/cms';
 import { ICMSProduct, IProduct } from '@/interfaces/cmsInterface';
 
 export async function getStaticProps() {
-    const res = await fetch(`${CMS_API}${CMS_PRODUCTS}`);
+    const res = await fetch(`${CMS_API}${CMS_PRODUCTS}${POPULATE_ALL}`);
     const data = await res.json()
+
+    console.log(data.data[0].attributes.image.data.attributes.url,"dataaaa");
 
     const products: IProduct[] = data.data.map((item: ICMSProduct) => {
         return {
@@ -19,7 +21,8 @@ export async function getStaticProps() {
             raisedAmount: item.attributes.raisedAmount,
             componentId: item.attributes.componentId,
             ownerAddress: item.attributes.ownerAddress,
-            complete: item.attributes.complete
+            complete: item.attributes.complete,
+            image: item.attributes.image?.data?.attributes?.url || null
         }
     });
 
@@ -32,6 +35,8 @@ export async function getStaticProps() {
 
 
 export default function Products({ products }: { products: IProduct[] }) {
+    console.log(products,"PRODUCTS");
+    
     if (products.length > 0) {
         return (
             <>

@@ -9,6 +9,7 @@ export default function CreateProduct() {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [raiseAmount, setRaiseAmount] = useState("");
+    const [files, setFiles] = useState([]);
 
     const { createProduct, isLoading } = useManifest();
 
@@ -16,8 +17,12 @@ export default function CreateProduct() {
         func(e.target.value);
     };
 
+    const handleFileChange = (e: any) => {
+        setFiles(e.target.files);
+    }
+
     const handleClick = async () => {
-        await createProduct(title, description, raiseAmount);
+        await createProduct(title, description, raiseAmount,files[0]);
     };
 
     return (
@@ -37,6 +42,7 @@ export default function CreateProduct() {
                 <Box>
                     <Typography>Raise Amount</Typography>
                     <Input type='number' onChange={(e) => { handleChange(e, setRaiseAmount) }} />
+                    <Input type='file' onChange={handleFileChange} />
                 </Box>
                 <Button
                     sx={styles.button}
