@@ -8,6 +8,6 @@ export const styles = {
     },
     button: {
         maxWidth: "300px",
-        mt: "24px"
+        my: "24px"
     }
 };

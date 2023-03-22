@@ -1,6 +1,6 @@
 import { useManifest } from '@/hooks/useManifest';
 import { styles } from '@/styles/CreateProduct.styles';
-import { Box, Button, Input, Typography } from '@mui/material';
+import { Box, Button, CircularProgress, Input, Typography } from '@mui/material';
 import { ChangeEvent, useState } from 'react';
 
 
@@ -10,7 +10,7 @@ export default function CreateProduct() {
     const [description, setDescription] = useState("");
     const [raiseAmount, setRaiseAmount] = useState("");
 
-    const { createProduct } = useManifest();
+    const { createProduct, isLoading } = useManifest();
 
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, func: Function) => {
         func(e.target.value);
@@ -42,7 +42,9 @@ export default function CreateProduct() {
                     sx={styles.button}
                     variant='contained'
                     onClick={handleClick}
+                    disabled={isLoading}
                 >CREATE A PRODUCT</Button>
+                {isLoading && <CircularProgress />}
             </Box>
         </>
     )
