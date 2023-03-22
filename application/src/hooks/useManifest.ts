@@ -17,7 +17,7 @@ export const useManifest = () => {
     const sendTransaction = useSendTransaction();
     const [isLoading, setLoading] = useState(false);
     /*
-    createProduct is a function which takes three attributes and one optional: title(product title), description(product description) and raiseAmount(the amount that should be raised for the product), image(optional)
+    createProduct is a function which takes four arguments: title(product title), description(product description) and raiseAmount(the amount that should be raised for the product), image(blob)
     */
     const createProduct = async (title: string, description: string, raiseAmount: string, imageFile: Blob) => {
         setLoading(true);
