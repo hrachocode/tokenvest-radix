@@ -16,8 +16,6 @@ mod investment {
         xrd_tokens_vault: Vault,
         // Investment goal for the startup
         investment_goal: Decimal,
-        // Empty vault to return for errors
-        error_bucket: Vault,
     }
 
     impl Investment {
@@ -41,7 +39,6 @@ mod investment {
                 investors: HashMap::default(),
                 xrd_tokens_vault: Vault::new(RADIX_TOKEN),
                 investment_goal: investment_goal,
-                error_bucket: Vault::new(RADIX_TOKEN),
             }
             .instantiate();
         investment_component.add_access_check(access_rules);
@@ -67,7 +64,7 @@ mod investment {
         // Returns an error log and an empty bucket if the amount is not enough 
         else {
         error!("NOT ENOUGH INVESTED");
-        self.error_bucket.take_all() 
+        self.xrd_tokens_vault.take(0)
     }
    }
   }
