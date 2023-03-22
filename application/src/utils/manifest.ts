@@ -52,6 +52,13 @@ CALL_METHOD
 `
 }
 
+/*
+withdrawManifest is a function which takes three arguments: 
+accountAddress(the address of the account that creates the product)
+resourceAddress(the address of the 'OWNER' resource)
+componentId(the adress of the component)
+withdrawManifest returns a manifest string using all of the arguments mentioned
+*/
 export const withdrawManifest = (accountAddress:string,resourceAddress:string, componentId:string) =>{
     return `
 CALL_METHOD 

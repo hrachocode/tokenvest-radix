@@ -9,13 +9,13 @@ import { useAccounts } from "./useAccounts";
 import { useSendTransaction } from "./useSendTransaction";
 
 /* 
-useManifest is a custom hook which uses useAccounts and useSendTransaction hooks
-and returns two functions: createProduct and invest
+useManifest is a custom hook which uses useAccounts, useSendTransaction and UseState hooks
+and returns three functions and a variable: createProduct, invest, withdraw and isLoading
  */
 export const useManifest = () => {
     const accounts = useAccounts();
     const sendTransaction = useSendTransaction();
-    const [isLoading,setLoading] = useState(false);
+    const [isLoading, setLoading] = useState(false);
     /*
     createProduct is a function which takes three attributes: title(product title), description(product description) and raiseAmount(the amount that should be raised for the product)
     */
@@ -151,20 +151,42 @@ export const useManifest = () => {
         })
     };
 
+    /*
+    withdraw is a function which takes one argument: product(product information)
+    */
     const withdraw = async (product: IProduct) => {
         setLoading(true);
+        /*
+        1. Call sendTransaction with withdrawManifest
+        */
         const transactionRes = await sendTransaction(withdrawManifest(accounts[0].address, product.ownerResource, product.componentId));
+        /*
+        2. Call handleRequest with gateway url of the nebunet with the response from the previous call         
+        By doing this we receive information about the transaction, using which we can make sure if the transaction was successful or not
+        */
         const transactionInfo = await handleRequest(GATEWAY_URL, METHODS.POST, {
             "transaction_identifier": {
                 "type": "intent_hash",
                 "value_hex": (transactionRes as ITransactionRes).value.transactionIntentHash
             }
         });
-        const updatedStates = transactionInfo.details.receipt.state_updates.updated_substates;
-        if(updatedStates.length === 1){
+        const updatedSubstates = transactionInfo.details.receipt.state_updates.updated_substates;
+        /*
+        3. Checking the amount of updated substates
+        If the amount of the updated substates is one, the withdraw is not completely done
+        If the amount of the updated substates is two, the withdraw is done successfully 
+        That is because if the amount of updated substates is one, it means that an empty bucket is being send.
+        In contrast if the amount of updates substates is two, it means that the withdraw amount is being received and sent to the account.
+        */
+        if (updatedSubstates.length === 1) {
             setLoading(false);
             alert("Not enough to withdraw !!!");
         } else {
+            /*
+            4. Call handleRequest with our CMS API url using the product id and the PUT method
+            to update data in our CMS.
+            Using the confirmation we get from above we update the complete status to true
+            */
             const putRes = await handleRequest(`${CMS_API}${CMS_PRODUCTS}/${product.id}`, METHODS.PUT, {
                 "data": {
                     "complete": true,
@@ -174,11 +196,11 @@ export const useManifest = () => {
                 setLoading(false);
                 alert(`Success!!!`);
             } else {
-                setLoading(false); 
+                setLoading(false);
                 alert("Something went wrong!!!");
             }
         }
-        
+
     };
 
     return { createProduct, invest, withdraw, isLoading };
