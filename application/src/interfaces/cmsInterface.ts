@@ -6,6 +6,8 @@ export interface ICMSProduct {
         raiseAmount: string;
         raisedAmount: string;
         componentId:string;
+        ownerAddress:string;
+        ownerResource:string;
     }
 }
 export interface IProduct {
@@ -15,4 +17,6 @@ export interface IProduct {
     raiseAmount: string;
     raisedAmount: string;
     componentId: string;
+    ownerAddress: string;
+    ownerResource:string;
 }

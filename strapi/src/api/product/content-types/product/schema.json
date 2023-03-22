@@ -26,6 +26,12 @@
     },
     "componentId": {
       "type": "string"
+    },
+    "ownerAddress": {
+      "type": "string"
+    },
+    "ownerResource": {
+      "type": "string"
     }
   }
 }

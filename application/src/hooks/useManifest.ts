@@ -1,148 +1,141 @@
-import { CMS_API, CMS_PRODUCTS } from "@/constants/cms";
+import { CMS_API, CMS_PRODUCTS, DEFAULT_RAISED_AMOUNT } from "@/constants/cms";
 import { GATEWAY_URL, GATEWAY_URL_RESOURCES, GATEWAY_URL_DETAILS, PACKAGE_ID, TRANSACTION_SUCCESSFUL } from "@/constants/radix";
 import { IProduct } from "@/interfaces/cmsInterface";
+import { ITransactionRes } from "@/interfaces/radixInterface";
+import { handleRequest, METHODS } from "@/utils/handleRequest";
+import { createProductManifest, investManifest, withdrawManifest } from "@/utils/manifest";
 import { useAccounts } from "./useAccounts";
 import { useSendTransaction } from "./useSendTransaction";
 
-interface ITransactionId {
-    value: {
-        transactionIntentHash: string
-    }
-}
-
+/* 
+useManifest is a custom hook which uses useAccounts and useSendTransaction hooks
+and returns two functions: createProduct and invest
+ */
 export const useManifest = () => {
     const accounts = useAccounts();
     const sendTransaction = useSendTransaction();
-
+    /*
+    createProduct is a function which takes three attributes: title(product title), description(product description) and raiseAmount(the amount that should be raised for the product)
+    */
     const createProduct = async (title: string, description: string, raiseAmount: string) => {
-        const transactionId = await sendTransaction(`
-CALL_FUNCTION
-    PackageAddress("${PACKAGE_ID}")
-    "Investment"
-    "new"
-    Decimal("${raiseAmount}")
-    "${title}";
-CALL_METHOD
-    ComponentAddress("${accounts[0].address}")
-    "deposit_batch"
-    Expression("ENTIRE_WORKTOP");    
-`);
-        const data = await fetch(GATEWAY_URL, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                "transaction_identifier": {
-                    "type": "intent_hash",
-                    "value_hex": (transactionId as ITransactionId).value.transactionIntentHash
-                }
-            })
+        /* 
+        1. Call sendTransaction method with createProductManifest
+        sendTranscation is a method that takes manifest string as an argument and calls it using the sendTransaction() method provided by radix-dapp-toolkit
+        */
+        const transactionRes = await sendTransaction(createProductManifest(PACKAGE_ID, raiseAmount, title, accounts[0].address));
+        /*
+        2. Call handleRequest with gateway url of the nebunet with the response from the previous call
+        By doing this we receive information about the transaction, using which we can make sure if the transaction was successful or not
+        */
+        const transactionInfo = await handleRequest(GATEWAY_URL, METHODS.POST, {
+            "transaction_identifier": {
+                "type": "intent_hash",
+                "value_hex": (transactionRes as ITransactionRes).value.transactionIntentHash
+            }
         });
-        const result = await data.json();
-        if (result.transaction.transaction_status === TRANSACTION_SUCCESSFUL) {
-            await fetch(`${CMS_API}${CMS_PRODUCTS}`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    "data": {
-                        "title": title,
-                        "description": description,
-                        "raiseAmount": raiseAmount,
-                        "raisedAmount": "0",
-                        "componentId": result.details.referenced_global_entities[0]
-                    }
-                })
+        /*
+        3. Check transaction status 
+        */
+        if (transactionInfo.transaction.transaction_status === TRANSACTION_SUCCESSFUL) {
+            /*
+            4. Call handleRequest with our CMS API url
+            After making sure the transaction was successful, post request product data to our CMS, which includes
+            title,description,raiseAmount: arguments for the function
+            raisedAmount: the amount that has already been raised for the produect(default 0)
+            componentId: component address we receive from transaction information
+            ownerAddress: the account address of the user who created the product
+            ownerResource: the owner badge resource address
+            */
+            await handleRequest(`${CMS_API}${CMS_PRODUCTS}`, METHODS.POST, {
+                "data": {
+                    "title": title,
+                    "description": description,
+                    "raiseAmount": raiseAmount,
+                    "raisedAmount": DEFAULT_RAISED_AMOUNT,
+                    "componentId": transactionInfo.details.referenced_global_entities[0],
+                    "ownerAddress": accounts[0].address,
+                    "ownerResource": transactionInfo.details.referenced_global_entities[1],
+                }
             })
         }
-        return result;
     };
 
+    /*
+    invest is a function which takes two arguments: investAmount(the amount to invest), product(product information)
+    */
     const invest = async (investAmount: string, product: IProduct) => {
-        const res = await fetch(GATEWAY_URL_RESOURCES, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                "address": accounts[0].address
-            })
+        /*
+        1. Call handleRequest with nebunet resources url
+        By sendind the account address, we receive information about account resources
+        */
+        const resourcesData = await handleRequest(GATEWAY_URL_RESOURCES, METHODS.POST, {
+            "address": accounts[0].address
         })
-        const data = await res.json();
-        const resources = data.fungible_resources.items;
+        /*
+        2. Filter fungible resources
+        */
+        const resources = resourcesData.fungible_resources.items;
         await resources.forEach(async (item: { address: string }) => {
-            const details = await fetch(GATEWAY_URL_DETAILS, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    "address": item.address
-                })
+            /*
+            3. Call handleRequest with nebunet details url
+            By sending the resource address of every resource, we receive more details about the resources
+            */
+            const resourceDetails = await handleRequest(GATEWAY_URL_DETAILS, METHODS.POST, {
+                "address": item.address
             });
-            const detailsRes = await details.json();
-            detailsRes.metadata.items.forEach(async (item: { value: string }) => {
+            resourceDetails.metadata.items.forEach(async (item: { value: string }) => {
+                /*
+                4. Check if the resource is the Radix resource
+                */
                 if (item.value === "Radix") {
-                    const radixAddress = detailsRes.address;
-                    const transactionId = await sendTransaction(`
-CALL_METHOD
-    ComponentAddress("${accounts[0].address}")
-    "withdraw_by_amount"
-    Decimal("${investAmount}")
-    ResourceAddress("${radixAddress}");
-TAKE_FROM_WORKTOP_BY_AMOUNT
-    Decimal("${investAmount}")
-    ResourceAddress("${radixAddress}")
-    Bucket("bucket1");
-CALL_METHOD
-    ComponentAddress("${product.componentId}")
-    "invest"
-    Bucket("bucket1")
-    "walter";
-CALL_METHOD
-    ComponentAddress("${accounts[0].address}")
-    "deposit_batch"
-    Expression("ENTIRE_WORKTOP");                  
-`);
-                    const data = await fetch(GATEWAY_URL, {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify({
-                            "transaction_identifier": {
-                                "type": "intent_hash",
-                                "value_hex": (transactionId as ITransactionId).value.transactionIntentHash
-                            }
-                        })
+                    const radixAddress = resourceDetails.address;
+                    /*
+                    5. Call sendTransaction method with investManifest
+                    */
+                    const transactionRes = await sendTransaction(investManifest(accounts[0].address, investAmount, radixAddress, product.componentId));
+                    /*
+                    6. Call handleRequest with gateway url of the nebunet with the response from the previous call
+                    By doing this we receive information about the transaction, using which we can make sure if the transaction was successful or not
+                    */
+                    const transactionInfo = await handleRequest(GATEWAY_URL, METHODS.POST, {
+                        "transaction_identifier": {
+                            "type": "intent_hash",
+                            "value_hex": (transactionRes as ITransactionRes).value.transactionIntentHash
+                        }
                     });
-                    const result = await data.json();
-                    const amount = result.details.receipt.output[3].data_json;
-                    if (result.transaction.transaction_status === TRANSACTION_SUCCESSFUL) {
-                        await fetch(`${CMS_API}${CMS_PRODUCTS}/${product.id}`, {
-                            method: "PUT",
-                            headers: {
-                                "Content-Type": "application/json"
-                            },
-                            body: JSON.stringify({
-                                "data": {
-                                    "raisedAmount": amount,
-                                }
-                            })
+                    /*
+                    7. Get the total raised amount using the transcation information 
+                    */
+                    const amount = transactionInfo.details.receipt.output[3].data_json;
+                    /*
+                    8. Check transaction status 
+                    */
+                    if (transactionInfo.transaction.transaction_status === TRANSACTION_SUCCESSFUL) {
+                        /*
+                        9. Call handleRequest with our CMS API url using the product id and the PUT method
+                        to update data in our CMS.
+                        Using the total amount from above we update the raisedAmount value 
+                        */
+                        await handleRequest(`${CMS_API}${CMS_PRODUCTS}/${product.id}`, METHODS.PUT, {
+                            "data": {
+                                "raisedAmount": amount,
+                            }
                         })
                     }
                 }
             })
         })
-
-
-
-
-
     };
 
+    const withdraw = async (product: IProduct) => {
+        const transactionRes = await sendTransaction(withdrawManifest(accounts[0].address, product.ownerResource, product.componentId));
+        const transactionInfo = await handleRequest(GATEWAY_URL, METHODS.POST, {
+            "transaction_identifier": {
+                "type": "intent_hash",
+                "value_hex": (transactionRes as ITransactionRes).value.transactionIntentHash
+            }
+        });
+    };
 
-    return { createProduct, invest };
+    return { createProduct, invest, withdraw };
 };
