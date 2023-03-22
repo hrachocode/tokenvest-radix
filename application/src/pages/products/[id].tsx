@@ -1,9 +1,9 @@
-import { CMS_API, CMS_PRODUCTS, POPULATE_ALL } from "@/constants/cms";
+import { CMS_API, CMS_PRODUCTS, CMS_URL, POPULATE_ALL } from "@/constants/cms";
 import { useAccounts } from "@/hooks/useAccounts";
 import { useManifest } from "@/hooks/useManifest";
 import { ICMSProduct, IProduct } from "@/interfaces/cmsInterface";
 import { styles } from "@/styles/Products.styles";
-import { Button, CircularProgress, Input, Typography } from "@mui/material";
+import { Box, Button, CircularProgress, Input, Typography } from "@mui/material";
 import { GetStaticPropsContext } from "next";
 import { ChangeEvent, useEffect, useState } from "react";
 
@@ -79,6 +79,14 @@ export default function Product({ product }: { product: IProduct }) {
 
     return (
         <>
+            {product.image ?
+                <>
+                    <Box sx={{
+                        ...styles.bigImage,
+                        backgroundImage: `url(${CMS_URL}${product.image})`
+                    }}></Box>
+                </>
+                : <></>}
             <Typography>Product title: {product.title}</Typography>
             <Typography>Product description: {product.description}</Typography>
             <Typography>Product id: {product.id}</Typography>

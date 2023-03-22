@@ -11,7 +11,6 @@ export const styles = {
         background: "rgba(0,74,128,0.2)",
         padding: "16px",
         display: "flex",
-        flexDirection: "column",
         justifyContent: "space-between",
         cursor: "pointer",
         position: "relative",
@@ -22,6 +21,11 @@ export const styles = {
     completeProduct: {
         background: "rgba(0,74,128,0.15)",
         opacity: "0.7"
+    },
+    infoWrapper: {
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
     },
     titleDescriptionBox: {
         display: "flex",
@@ -86,5 +90,18 @@ export const styles = {
         fontWeight: "bold",
         fontSize: "36px",
         color: "rgb(13, 56, 116)"
+    },
+    image: {
+        height: "100%",
+        width: "300px",
+        backgroundSize: "100% 100%",
+        borderRadius: "16px"
+    },
+    bigImage: {
+        width: "50%",
+        height: "400px",
+        backgroundSize: "100% 100%",
+        borderRadius: "16px",
+        mb: "16px"
     }
 }
