@@ -1,3 +1,4 @@
+import { useAccounts } from '@/hooks/useAccounts';
 import { useManifest } from '@/hooks/useManifest';
 import { styles } from '@/styles/CreateProduct.styles';
 import { Box, Button, CircularProgress, Input, Typography } from '@mui/material';
@@ -10,6 +11,7 @@ export default function CreateProduct() {
     const [description, setDescription] = useState("");
     const [raiseAmount, setRaiseAmount] = useState("");
     const [files, setFiles] = useState([]);
+    const accounts = useAccounts();
 
     const { createProduct, isLoading } = useManifest();
 
@@ -22,7 +24,11 @@ export default function CreateProduct() {
     }
 
     const handleClick = async () => {
-        await createProduct(title, description, raiseAmount,files[0]);
+        if(accounts?.[0]?.address){
+            await createProduct(title, description, raiseAmount,files[0]);
+        } else {
+            alert("Please connect !!!")
+        }
     };
 
     return (

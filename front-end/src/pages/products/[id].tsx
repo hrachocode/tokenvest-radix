@@ -67,8 +67,12 @@ export default function Product({ product }: { product: IProduct }) {
         setInvestAmount(e.target.value);
     }
 
-    const handleClick = () => {
-        invest(investAmount, product);
+    const handleInvest = () => {
+        if (accounts?.[0]?.address) {
+            invest(investAmount, product);
+        } else {
+            alert("Please connect !!!")
+        }
     }
 
     const handleWithdraw = () => {
@@ -95,7 +99,7 @@ export default function Product({ product }: { product: IProduct }) {
             {!product.complete ?
                 <>
                     <Input type='number' onChange={handleChange} />
-                    <Button disabled={isLoading} onClick={handleClick}>invest</Button>
+                    <Button disabled={isLoading} onClick={handleInvest}>invest</Button>
                     {mounted && (product.ownerAddress === accounts?.[0]?.address) &&
                         <Button disabled={isLoading} onClick={handleWithdraw}>withdraw</Button>}
                     {isLoading && <CircularProgress size={16} />}
