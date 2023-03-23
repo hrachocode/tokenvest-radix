@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start:strapi": "cd strapi && yarn && yarn build && yarn develop",
-    "start:frontend": "cd front-end && yarn && yarn run dev",
+    "setup": "concurrently -n \"strapi,frontend\" \"cd strapi && yarn && yarn build\" \"cd front-end && yarn\"",
+    "start:strapi": "cd strapi && yarn develop",
+    "start:frontend": "cd front-end && yarn run dev",
     "start:prod": "concurrently -n \"strapi,frontend\" \"yarn start:strapi\" \"yarn start:frontend\"",
     "start:dev": "concurrently -n \"strapi,frontend\" \"cd strapi && yarn develop\" \"cd front-end && yarn run dev\""
   },
