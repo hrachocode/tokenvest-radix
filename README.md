@@ -21,7 +21,7 @@ Architecture consist of 3 main concepts(folders).
 ## How to run
 
 ### Requirements
-NodeJs version 14
+NodeJs version 14 or higher
 
 ### App
 Based on your package manager you need 2 simple commands, in this example we will use yarn
