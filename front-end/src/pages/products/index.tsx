@@ -10,7 +10,7 @@ export async function getStaticProps() {
     const res = await fetch(`${CMS_API}${CMS_PRODUCTS}${POPULATE_ALL}`);
     const data = await res.json();
 
-    const products: IProduct[] = data.data.map((item: ICMSProduct) => {
+    const products: IProduct[] = data?.data?.map((item: ICMSProduct) => {
         return {
             id: item.id,
             title: item.attributes.title,
@@ -22,7 +22,7 @@ export async function getStaticProps() {
             complete: item.attributes.complete,
             image: item.attributes.image?.data?.attributes?.url || null
         }
-    });
+    }) || [];
 
     return {
         props: {
@@ -33,8 +33,6 @@ export async function getStaticProps() {
 
 
 export default function Products({ products }: { products: IProduct[] }) {
-    console.log(products);
-    
     if (products.length > 0) {
         return (
             <>
