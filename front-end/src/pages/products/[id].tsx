@@ -98,8 +98,8 @@ export default function Product({ product }: { product: IProduct }) {
             <Typography>Amount raised: {product.raisedAmount}</Typography>
             {!product.complete ?
                 <>
-                    <Input type='number' onChange={handleChange} />
-                    <Button disabled={isLoading} onClick={handleInvest}>invest</Button>
+                    {mounted && !(product.ownerAddress === accounts?.[0]?.address) ? <><Input type='number' onChange={handleChange} />
+                        <Button disabled={isLoading} onClick={handleInvest}>invest</Button></> : <></>}
                     {mounted && (product.ownerAddress === accounts?.[0]?.address) &&
                         <Button disabled={isLoading} onClick={handleWithdraw}>withdraw</Button>}
                     {isLoading && <CircularProgress size={16} />}
