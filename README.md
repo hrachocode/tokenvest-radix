@@ -35,7 +35,7 @@ for the next times, for development purposes
 ### Wallet
 1. setup the [radix mobile application[(https://docs-babylon.radixdlt.com/main/getting-started-developers/wallet-and-connector.html)
 2. install the [connector extentsion](https://docs-babylon.radixdlt.com/main/getting-started-developers/wallet-and-connector.html#_install_the_connector)
-3. (Optional) transfer tokens to your account from radix betanet.
+3. Transfer tokens to your account from radix betanet.
 4. connect your accoun in our platform using **connect** button in header
 ![image](https://user-images.githubusercontent.com/23248910/227128067-6824769e-92c9-4aea-990c-82d5ab1d9097.png)
 
